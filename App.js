@@ -1,23 +1,32 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, TextInput, Button, Text, StyleSheet, FlatList } from 'react-native';
 import { Keyboard } from 'react-native';
 
 const CalculatorApp = () => {
   const [number1, setNumber1] = useState('');
   const [number2, setNumber2] = useState('');
   const [result, setResult] = useState('');
+  const [history, setHistory] = useState([]);
 
   const handleSum = () => {
     const sum = parseFloat(number1) + parseFloat(number2);
+    const calculation = `${number1} + ${number2} = ${sum}`;
     setResult(sum.toString());
+    setHistory((prevHistory) => [calculation, ...prevHistory]);
     Keyboard.dismiss();
   };
 
   const handleSubtraction = () => {
     const subtraction = parseFloat(number1) - parseFloat(number2);
+    const calculation = `${number1} - ${number2} = ${subtraction}`;
     setResult(subtraction.toString());
+    setHistory((prevHistory) => [calculation, ...prevHistory]);
     Keyboard.dismiss();
   };
+
+  const renderHistoryItem = ({ item }) => (
+    <Text style={styles.historyItem}>{item}</Text>
+  );
 
   return (
     <View style={styles.container}>
@@ -40,6 +49,13 @@ const CalculatorApp = () => {
         <Button title="+" onPress={handleSum} />
         <Button title="-" onPress={handleSubtraction} />
       </View>
+      <Text style={styles.history}>History: </Text>
+      <FlatList
+        data={history}
+        renderItem={renderHistoryItem}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.historyList}
+      />
     </View>
   );
 };
@@ -63,12 +79,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 18,
     fontWeight: 'bold',
+    marginTop: 150,
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '40%',
     marginBottom: 10,
+  },
+  historyList: {
+    marginTop: 20,
+    width: '100%',
+    paddingLeft: 140,
+  
+  },
+  historyItem: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  history: {
+    marginBottom: 20,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 20,
   },
 });
 
